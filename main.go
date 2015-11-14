@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	flagStaticDir = flag.String("i", "static", "Static File Directory to compile")
-	flagOuputFile = flag.String("o", "", "Output File Path to write to")
+	flagStaticDir = flag.String("i", "static", "Static directory to embed")
+	flagOuputFile = flag.String("o", "", "Output file to write to")
 	flagPkg       = flag.String("pkg", "main", "Package name of the generated static file")
-	flagGroup     = flag.String("group", "Assets", "The group name of the static files i.e. CSS, JS, Assets, HTML")
+	flagGroup     = flag.String("group", "Assets", "The group name of the static files i.e. CSS, JS, Assets, HTML. It will be added to the generated static function name.")
 	flagIgnore    = flag.String("ignore", "", "Regexp for files/dirs we should ignore i.e. \\.gitignore")
 	flagPrefix    = flag.String("prefix", "", "Prefix to strip from file paths")
 	flagInit      = flag.Bool("init", false, " determines if only initializing the static file without contents")
@@ -152,6 +152,8 @@ func processFilesRecursive(path string, dir string, isSymlinkDir bool, symlinkDi
 
 			tmpPath = applyPathOptions(fPath)
 
+			fmt.Println("Processing:", tmpPath)
+
 			// write out here
 			writer.WriteString(fmt.Sprintf(dirFileStart, tmpPath, info.Name(), info.Size(), info.Mode(), info.ModTime().Unix(), true, ""))
 			processFilesRecursive(p, p, isSymlinkDir, symlinkDir+string(os.PathSeparator)+info.Name())
@@ -176,6 +178,8 @@ func processFilesRecursive(path string, dir string, isSymlinkDir bool, symlinkDi
 			if fi.IsDir() {
 
 				tmpPath = applyPathOptions(fPath)
+
+				fmt.Println("Processing:", tmpPath)
 
 				// write out here
 				writer.WriteString(fmt.Sprintf(dirFileStart, tmpPath, file.Name(), info.Size(), info.Mode(), info.ModTime().Unix(), true, ""))

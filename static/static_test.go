@@ -174,7 +174,7 @@ func TestStaticNew(t *testing.T) {
 
 	config := &Config{
 		UseStaticFiles: true,
-		AbsPkgPath:     getGOPATH() + "/src/github.com/joeybloggs/statics",
+		AbsPkgPath:     getGOPATH() + "/src/github.com/go-playground/statics",
 	}
 
 	staticFiles, err := New(config, testDirFile)
@@ -188,7 +188,7 @@ func TestStaticNew(t *testing.T) {
 
 	}(staticFiles)
 
-	time.Sleep(1000)
+	time.Sleep(5000)
 
 	f, err := staticFiles.GetHTTPFile("/static/test-files/teststart/plainfile.txt")
 	Equal(t, err, nil)
@@ -292,7 +292,7 @@ func TestLocalNew(t *testing.T) {
 
 	config := &Config{
 		UseStaticFiles: false,
-		AbsPkgPath:     getGOPATH() + "/src/github.com/joeybloggs/statics",
+		AbsPkgPath:     getGOPATH() + "/src/github.com/go-playground/statics",
 	}
 
 	staticFiles, err := New(config, testDirFile)
@@ -306,22 +306,22 @@ func TestLocalNew(t *testing.T) {
 
 	}(staticFiles)
 
-	time.Sleep(1000)
+	time.Sleep(5000)
 
 	f, err := staticFiles.GetHTTPFile("/static/test-files/teststart/plainfile.txt")
 	Equal(t, err, nil)
 
 	fis, err := f.Readdir(-1)
 	NotEqual(t, err, nil)
-	Equal(t, err.Error(), "readdirent: invalid argument")
+	// Equal(t, err.Error(), "readdirent: invalid argument") // this is "not a directory" in linux but readdirent: invalid argument in osx
 
 	fi, err := f.Stat()
 	Equal(t, err, nil)
 	Equal(t, fi.Name(), "plainfile.txt")
-	Equal(t, fi.Size(), int64(10))
+	// Equal(t, fi.Size(), int64(10))  // commented out as size can differ on different file systems when cloned
 	Equal(t, fi.IsDir(), false)
-	Equal(t, fi.Mode(), os.FileMode(420))
-	Equal(t, fi.ModTime(), time.Unix(1446650128, 0))
+	// Equal(t, fi.Mode(), os.FileMode(420)) // commented out as permissions can be different based on when & where you cloned
+	// Equal(t, fi.ModTime(), time.Unix(1446650128, 0)) // commented out as file mod times will be different based on when you cloned
 	NotEqual(t, fi.Sys(), nil)
 
 	err = f.Close()
@@ -333,10 +333,10 @@ func TestLocalNew(t *testing.T) {
 	fi, err = f.Stat()
 	Equal(t, err, nil)
 	Equal(t, fi.Name(), "teststart")
-	Equal(t, fi.Size(), int64(170))
+	// Equal(t, fi.Size(), int64(170)) // commented out as size can differ on different file systems when cloned
 	Equal(t, fi.IsDir(), true)
-	Equal(t, fi.Mode(), os.FileMode(2147484141))
-	Equal(t, fi.ModTime(), time.Unix(1446650128, 0))
+	// Equal(t, fi.Mode(), os.FileMode(2147484141))  // commented out as permissions can be different based on when & where you cloned
+	// Equal(t, fi.ModTime(), time.Unix(1446650128, 0))  // commented out as file mod times will be different based on when you cloned
 	NotEqual(t, fi.Sys(), nil)
 
 	var j int
@@ -410,7 +410,7 @@ func TestBadLocalAbsPath(t *testing.T) {
 
 	config := &Config{
 		UseStaticFiles: false,
-		AbsPkgPath:     "../github.com/joeybloggs/statics",
+		AbsPkgPath:     "../github.com/go-playground/statics",
 	}
 
 	staticFiles, err := New(config, testDirFile)
